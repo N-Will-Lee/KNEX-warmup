@@ -1,0 +1,80 @@
+1) create database in postgreSQL
+    - createdb DATA_NICK
+    go into psql and make sure database was created:
+        - psql DATA_NICK
+        - \l 
+            -shows all databases
+
+2) now to install the middleware knex
+    -npm install knex
+    - knex init
+        -this creates knexfile.js
+*****TEST AT EVERY STEP.  START SMALL AND TEST EVERY PIECE*******
+
+3)  set up knexfile.js 
+    -take care to look at connection - object only required if you're doing authentication
+        -remember to remove filename:!  and get rid of your object
+    -connect to postgreSQL ('postgresql://localhost/')
+    -client is 'pg' - for postgresql
+    -all we need is development and production
+        -for production, client is still 'pg'
+        -and we need connection: process.env.DATABASE_URL || 
+            -DATABASE_URL needs to exist like this for any heroku deployment because heroku assigns dynamic addess
+
+4) make our knex migrations file
+    - knex migrate:make [databasename]
+    -exports.up = function(knex, Promise)   {
+        return knex.schema.createTable('table_name', ('table_row_or_individual_entity') => {
+            table_row_or_individual_entity.increments('id');
+            table_row_or_individual_entity.date('dueDate');
+            table_row_or_individual_entity.text('resolution');
+
+            
+        })
+    };
+        -this is just a method to create a table.  knex is coming from our node module
+        -create table function takes two parameters, table name and and individual entity
+        -.increments is a knex function that is taking a sql statement and using knex to make into
+            -we call this a primary key -> unique identifier we use for table entries
+        -.date and .text are data types for our columns - knex docs have all of em
+        -exports.up is creating the table and the schema
+            -is knex migrate:latest
+
+5)  make exports.down function in migration file    
+        exports.down = function(knex, Promise) {
+            return knex.schema.dropTableIfExists('table_name');
+        };
+        -is knex migrate:rollback
+    
+6) make seed file   
+        knex seed:make 01_table_row_or_individual_entity
+        -makes a file that must be used in order so number it ex: '01_tableSeed'
+        
+        exports.seed = function(knex, Promise) {
+            // Deletes ALL existing entries
+            return knex('students').del()
+            .then(function () {
+                // Inserts seed entries
+                return knex('students').insert([
+                    {dueDate: "2018-09-12", resolution: 'learn knex'},
+                    {dueDate: "2018-02-24", resolution: 'also learn knex'}
+                ]);
+            });
+        };
+    - knex seed:run
+        -populates the schema specified in the migration file with the data we just entered in the seed file. 
+
+7) make some queries
+    -start by requireing the knex file object:
+        const connection = require('./knexfile')[process.env.NODE_ENV || 'development']
+        //now were giving the connection the knex module too?
+        const knex = require('knex')(connection)
+    -now were going to  build our queries
+        module.exports = {
+            list(){
+                return knex('table_row_or_individual_entity');
+            },
+            read(id)    {
+
+            },
+        }

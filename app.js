@@ -1,21 +1,36 @@
 const express = require('express')
-// const family = require('./data.js');
 const app = express();
 const port = process.env.port || 3000;
 const queries = require('./queries');
+const bodyParser = require('body-parser')
 
-// app.get('/', (request, response) => {
-//     response.send(family);
-// })
-// app.get('/doggy', (request, response) => {
-//     response.send('woof woof');
-// })
+app.use(bodyParser.json())
+
+app.get('/', (request, response) => {
+  queries.allStudents().then(function(students) {
+    response.json({students})
+  })
+})
+
+app.get('/:id', (request, response) =>    {
+    // console.log(request.params)
+    queries.individualStudent(request.params.id).then(function(student) {
+        response.json({student})
+    })
+})
+
+app.post('/', (request, response) => {
+    queries.createStudent(request.body)
+    .then((data) => {
+        response.json({data})
+    })
+    console.log(request.body)
+})
+
+app.delete('/id', (request, response) => {
+    queries.deleter(request.params.id)
+})
 
 app.listen(port, () => {
     console.log(`listening on ${port}`)
-    console.log(queries);
-})
-app.get('/', (request, res) => {
-    res.send('the route worked!!');
-    queries.getAll().then(response => res.send(response))
 })
