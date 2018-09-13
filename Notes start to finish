@@ -78,3 +78,30 @@
 
             },
         }
+
+
+
+
+
+
+DEPLOY TO HEROKU - from Maddie
+
+
+1.    Heroku login
+2.    Npm install cors
+3.    In app.js….
+a.    Const cors = require("cors")
+b.    App.use(cors())
+4.    Heroku create __name__
+5.    Git remote -v
+6.    Add/commit/push (to github)
+7.    Git push Heroku master
+8.    Heroku addons:create Heroku-postgresql
+9.    Heroku run knex migrate:latest
+10.    Heroku run knex seed:run
+
+TO FIND DEPLOYED SITE:
+1.    Heroku
+2.    Settings
+3.    Domain
+4.    "your app can be found at …"

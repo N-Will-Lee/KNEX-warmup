@@ -27,8 +27,10 @@ app.post('/', (request, response) => {
     console.log(request.body)
 })
 
-app.delete('/id', (request, response) => {
-    queries.deleter(request.params.id)
+app.delete('/:id', (request, response) => {
+    queries.deleter(request.params.id).then((data) =>    {
+        response.json({data})
+    })
 })
 
 app.listen(port, () => {

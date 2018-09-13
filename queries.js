@@ -16,7 +16,7 @@ function createStudent(newStudent)   {
 
 
 function deleter(id) {
-    return knex.select().from('students').where('id', id).delete()
+    return knex('students').where('id', id).delete()
 }
 module.exports = {
     allStudents,
